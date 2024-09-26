@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>欢迎界面</title>
+    <script type="text/javascript" th:src="@{https://telegram.org/js/telegram-web-app.js}"></script>
+    <script th:src="@{https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/css/welcome.css}">
+</head>
+<body>
+<div class="loader-wrapper">
+    <div class="loader"></div>
+</div>
+
+<div class="welcome-container">
+    <h1 class="welcome-message">欢迎使用伊露露bot</h1>
+    <p class="welcome-subtext">请确认您已满18岁，才能开始使用</p>
+
+    <label class="checkbox-container">
+        <input type="checkbox" id="ageCheckbox">
+        <span class="checkmark"></span>
+        我已满18岁
+    </label>
+
+    <button id="startButton" class="start-button" disabled>开始使用</button>
+</div>
+
+<script>
+    const ageCheckbox = document.getElementById('ageCheckbox');
+    const startButton = document.getElementById('startButton');
+
+    ageCheckbox.addEventListener('change', function() {
+        startButton.disabled = !this.checked;
+    });
+
+    // 加载动画
+    window.addEventListener('load', function() {
+        document.querySelector('.loader-wrapper').style.display = 'none';
+        document.querySelector('.welcome-container').style.display = 'block';
+    });
+
+    const tg = window.Telegram.WebApp;
+    const userId = tg.initDataUnsafe.user.id;
+    const userName = `${tg.initDataUnsafe.user.first_name} ${tg.initDataUnsafe.user.last_name}`;
+    const tgUserName=tg.initDataUnsafe.user.username;
+    const playerInDTO = {
+        playerId: userId,
+        playerName: userName,
+        tgUserName:tgUserName
+    };
+    startButton.addEventListener('click', function() {
+        if (!startButton.disabled){
+
+            axios({
+                method: 'POST',
+                url: '/checkPlayer',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify(playerInDTO)
+
+            }).then(response => {
+                if (response.data != null && response.data.code ==="10000" ) {
+
+                    console.log(response.data.url)
+                    window.location.href = response.data.url;
+                }
+            }).catch(function (error) {
+                console.error('发生错误:', error);
+                window.location.href = '/error';
+            });
+        }
+    });
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jing.mapper.LockGameLogMapper">
+    <resultMap id="BaseResultMap" type="com.jing.mapper.entity.LockGameLog">
+        <result column="chatid" property="chatId" jdbcType="VARCHAR"/>
+        <result column="chattitle" property="chatTitle" jdbcType="VARCHAR"/>
+        <result column="lockid" property="lockId" jdbcType="CHAR"/>
+        <result column="lockuserid" property="lockUserId" jdbcType="VARCHAR"/>
+        <result column="lockusername" property="lockUserName" jdbcType="VARCHAR"/>
+        <result column="locktgusername" property="lockTgUserName" jdbcType="VARCHAR"/>
+        <result column="otheruserid" property="otherUserId" jdbcType="VARCHAR"/>
+        <result column="otherusername" property="otherUserName" jdbcType="VARCHAR"/>
+        <result column="othertgusername" property="otherTgUserName" jdbcType="VARCHAR"/>
+        <result column="overtime" property="overtime" jdbcType="CHAR"/>
+        <result column="operationtime" property="operationTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        chatid, chattitle, lockid, lockuserid, lockusername, locktgusername, otheruserid, otherusername, othertgusername,
+        overtime, operationtime
+    </sql>
+    <insert id="insertLockGameLog" parameterType="com.jing.mapper.entity.LockGameLog">
+            insert into t_lockgamelog (chatid, chattitle, lockid, lockuserid, lockusername, locktgusername, otheruserid,
+            otherusername, othertgusername, overtime, operationtime)
+            values (#{chatId,jdbcType=VARCHAR}, #{chatTitle,jdbcType=VARCHAR}, #{lockId,jdbcType=CHAR},
+            #{lockUserId,jdbcType=VARCHAR}, #{lockUserName,jdbcType=VARCHAR}, #{lockTgUserName,jdbcType=VARCHAR},
+            #{otherUserId,jdbcType=VARCHAR}, #{otherUserName,jdbcType=VARCHAR}, #{otherTgUserName,jdbcType=VARCHAR},
+            #{overtime,jdbcType=CHAR}, now())
+    </insert>
+
+
+</mapper>

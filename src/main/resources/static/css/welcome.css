@@ -1,0 +1,152 @@
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Helvetica Neue', sans-serif;
+    background: url('/static/images/welcome.jpg');
+    background-size: cover;
+    background-color: #f8f5f9; /* 备用颜色 */
+    color: #4a4a4a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    backdrop-filter: blur(1px); /* 模糊背景 */
+}
+
+
+/* 加载动画 */
+.loader-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f5f9;
+    z-index: 999;
+}
+
+.loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #c27ba0;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 欢迎界面容器 */
+.welcome-container {
+    display: none;
+    text-align: center;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1.5s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* 欢迎语 */
+.welcome-message {
+    font-size: 2rem;
+    color: #c27ba0;
+    margin-bottom: 10px;
+    animation: textGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes textGlow {
+    0% { text-shadow: 0 0 5px #c27ba0; }
+    100% { text-shadow: 0 0 15px #c27ba0; }
+}
+
+/* 副标题 */
+.welcome-subtext {
+    font-size: 1rem;
+    color: #6a6a6a;
+    margin-bottom: 20px;
+}
+
+/* 复选框 */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+input[type="checkbox"] {
+    display: none;
+}
+
+input[type="checkbox"]:checked + .checkmark {
+    background-color: #c27ba0;
+}
+
+.checkmark {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    background-color: #e6e6e6;
+    margin-right: 10px;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.checkmark::after {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 4px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    opacity: 0;
+}
+
+input[type="checkbox"]:checked + .checkmark::after {
+    opacity: 1;
+}
+
+/* 按钮 */
+.start-button {
+    width: 100%;
+    padding: 10px 0;
+    background-color: #cccccc; /* 默认灰色背景 */
+    color: #666666; /* 默认灰色文字 */
+    border: none;
+    border-radius: 20px;
+    font-size: 1.2rem;
+    cursor: not-allowed;
+    transition: background-color 0.3s ease;
+}
+
+.start-button:enabled {
+    cursor: pointer;
+    background-color: #d88ab4;
+}
+
+.start-button:enabled:hover {
+    background-color: #e399bd;
+}

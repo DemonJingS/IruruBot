@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jing.mapper.GroupMapper">
+    <resultMap id="BaseResultMap" type="com.jing.mapper.entity.GroupInfo">
+        <result column="groupid" property="groupId" jdbcType="VARCHAR"/>
+        <result column="groupname" property="groupName" jdbcType="VARCHAR"/>
+        <result column="grouptype" property="groupType" jdbcType="VARCHAR"/>
+        <result column="jointime" property="joinTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="CHAR"/>
+
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        groupid
+        , groupname, grouptype,jointime,status
+    </sql>
+
+
+    <select id="selectByGroupId" resultType="com.jing.mapper.entity.GroupInfo">
+        select
+        <include refid="Base_Column_List"/>
+        from t_group
+        where groupid=#{groupId} and status='1'
+    </select>
+
+</mapper>

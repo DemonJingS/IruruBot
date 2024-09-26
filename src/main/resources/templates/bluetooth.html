@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>DG-LAB Dungeon-Lab</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta content="initial-dpr=2,maximum-dpr=3" name="flexible" />
+    <meta name="apple-mobile-web-app-title" content="DG-LAB Dungeon-Lab">
+    <meta name="keywords" content="DG-LAB Dungeon-Lab" />
+    <meta name="description" content="DG-LAB Dungeon-Lab" />
+
+    <link rel="stylesheet" th:href="@{/static/css/notyf.min.css}">
+
+</head>
+
+<body style="background-color: #111;">
+    <!--loading-->
+    <div class="overlay" id="overlay">
+        <div class="loader" id="loader"></div>
+        <div class="contain-item fixed-center visible-hidden " id="scanBT">
+            <h3>选择要连接的设备版本</h3>
+            <button onclick="scanBT(1)"
+                style="height: 40px;background-color: #ffe99d;width: 200px;border-radius: 10px;">扫描2.0设备</button>
+            <button onclick="scanBT(2)"
+                style="height: 40px;background-color: #ffe99d;width: 200px;border-radius: 10px;">扫描3.0设备</button>
+            <button onclick="toggleShowScanBT()" class="close-btn">X</button>
+        </div>
+    </div>
+    <!--about-us-->
+    <div class="container about-container normal-text-padding" style="color:#ffe99d">
+        <div class="contain-item">
+            <h2>郊狼蓝牙连接测试</h2>
+        </div>
+        <div class="contain-item">
+            <button onclick="toggleShowScanBT()" id="scanBTBtn" class="common-btn">扫描郊狼设备</button>
+            <button onclick="disconnect()" id="disconnectBtn" class="common-btn red-btn display-none">断开设备链接</button>
+        </div>
+        <div class="contain-item" id="waveSelectAndPlay" onchange="changeWave()">
+            <span>选择要发送给AB通道的波形</span>
+            <select id="selectDevice" style="height: 40px;background-color: #ffe99d;width: 200px;">
+                <option value="a" selected>波形A</option>
+                <option value="b">波形B</option>
+                <option value="c">波形C</option>
+            </select>
+
+            <button onclick="startSending()" class="common-btn" id="startSendBtn">开始写入波形</button>
+            <button onclick="stopSending()" class="common-btn red-btn display-none" id="stopSendBtn">停止写入</button>
+            <!-- <button onclick="startSending(1)" class="common-btn">开始写入2.0波形</button>
+            <button onclick="startSending(2)" class="common-btn">开始写入3.0波形</button> -->
+        </div>
+        <span class="logs-title">连接日志</span>
+        <div class="logs" id="logs">
+        </div>
+        <div class="contain-item">
+            <span>提示：每次断开后重新连接新设备的间隔最好在10秒钟以上，网页和系统之间的服务通信没有正确断开可能导致NetworkError: GATT Server is
+                disconnected.的错误。这是系统和硬件调度之间的问题，可能导致连接后设备灯变白但是无法写入或无法断开的情况，此时请刷新页面并重启郊狼，等待10秒后再次点击扫描按钮。</span>
+        </div>
+    </div>
+    <!--footer-->
+    <script type="text/javascript" th:src="@{/static/js/notyf.min.js}"></script>
+    <script>
+        let server; // 声明一个全局变量来存储 GATT 服务器对象
+        let count = 0; // AB通道发送计数器
+        let golbaltype = 1; // 选择的蓝牙设备类型 1-2.0 2-3.0
+        let errorCount = 0; // 发送失败计数器
+        let selectedOption = 'a';
+
+        const prefixArr = ['D-LAB', '47'] // 扫描前缀
+        const serviceIdArr = [
+            ['955a180b-0fe2-f5aa-a094-84b8d4f3e8ad'],
+            ['0000180c-0000-1000-8000-00805f9b34fb']
+        ] // 服务id
+        const dg2ChannelId = ['955a1506-0fe2-f5aa-a094-84b8d4f3e8ad', '955a1505-0fe2-f5aa-a094-84b8d4f3e8ad'] // 2.0的AB通道具体特性
+        const coyote2wave = {
+            'a': [
+                '210100',
+                '210102',
+                '210104',
+                '210106',
+                '210108',
+                '21010A',
+                '21010A',
+                '21010A',
+                '000000',
+                '000000',
+                '000000',
+                '000000'
+            ], 'b': [
+                'C4080A',
+                '24080A',
+                '84070A',
+                '03070A',
+                '63060A',
+                'E3050A',
+                '43050A',
+                'A3040A',
+                '22040A',
+                '82030A',
+                '02030A',
+                '21010A',
+                '21010A',
+                '21010A',
+                '21010A',
+                '21010A',
+                '21010A',
+                '21010A',
+                '21010A'
+            ], 'c': [
+                '210100',
+                '618102',
+                'A10105',
+                'E18107',
+                '21020A',
+                '81020A',
+                'C1020A',
+                '010300',
+                '410300',
+                'A10300',
+                '210100',
+                '618102',
+                'A10105',
+                'E18107',
+                '21020A',
+                '81020A',
+                'C1020A',
+                '010300',
+                '410300',
+                'A10300'
+            ]
+        }
+        const coyote3wave = {
+            'a': ['0A0A0A0A00000000',
+                '0A0A0A0A14141414',
+                '0A0A0A0A28282828',
+                '0A0A0A0A3C3C3C3C',
+                '0A0A0A0A50505050',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A00000000',
+                '0A0A0A0A00000000',
+                '0A0A0A0A00000000',
+                '0A0A0A0A00000000'
+            ], 'b': ['4A4A4A4A64646464',
+                '4545454564646464',
+                '4040404064646464',
+                '3B3B3B3B64646464',
+                '3636363664646464',
+                '3232323264646464',
+                '2D2D2D2D64646464',
+                '2828282864646464',
+                '2323232364646464',
+                '1E1E1E1E64646464',
+                '1A1A1A1A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464',
+                '0A0A0A0A64646464'
+            ], 'c': ['0A0A0A0A00000000',
+                '0A0A0A0A32323232',
+                '0A0A0A0A64646464',
+                '0A0A0A0A46464646',
+                '1515151500000000',
+                '1515151532323232',
+                '1515151564646464',
+                '1515151546464646',
+                '2020202000000000',
+                '2020202032323232',
+                '2020202064646464',
+                '2020202064646464',
+                '2B2B2B2B00000000',
+                '2B2B2B2B32323232',
+                '2B2B2B2B64646464',
+                '2B2B2B2B64646464',
+                '3636363600000000',
+                '3636363632323232',
+                '3636363664646464',
+                '3636363646464646']
+        }
+
+        function scanBT(type) {
+            if (typeof navigator.bluetooth === 'undefined') {
+                showErrorToast('您的浏览器不支持蓝牙API，请更换为Chrome浏览器')
+                return
+            }
+            if (server) {
+                showErrorToast('请先断开当前设备，等待几秒确定断开后重新扫描，也可刷新页面。')
+                return
+            }
+            golbaltype = type
+            // 选择扫描的设备前缀和服务id
+            let prefix = prefixArr[golbaltype - 1]
+            let serviceId = serviceIdArr[golbaltype - 1]
+            addLogs('Scanning for Bluetooth Device...');
+            showSuccessToast('扫描中，点击扫描到的设备，确定开始连接');
+            showOverlay();
+            showLoader();
+            hideScanBT(); //隐藏选择界面
+
+            //开始扫描设备
+            navigator.bluetooth.requestDevice({
+                filters: [{
+                    namePrefix: prefix
+                }],
+                optionalServices: serviceId
+            })
+                .then(device => {
+                    device.addEventListener('gattserverdisconnected', onDisconnected);//监听设备断开连接
+                    addLogs('Device Name: ' + device.name);
+                    addLogs('Device Id: ' + device.id);
+                    showSuccessToast('找到设备，获取服务中，请稍等...');
+                    if (!device.gatt.connected) {
+                        addLogs('Connecting to GATT Server...');
+                        return device.gatt.connect();
+                    } else {
+                        // Already connected.
+                        addLogs('Already connected to GATT Server...');
+                        return Promise.resolve();
+                    }
+                })
+                .then(gattServer => {
+                    server = gattServer; // 将获取到的 GATT 服务对象存储到全局变量中
+                    // 获取设备上的所有主服务。
+                    return server.getPrimaryServices();
+                })
+                .then(services => {
+                    console.log('services', services)
+                    hideBtn('scanBTBtn')
+                    showBtn('disconnectBtn') //展示断开按钮
+                    hideOverlay();
+                    addLogs('服务获取成功。')
+                    addLogs('已连接设备')
+                    showSuccessToast('已连接设备')
+                })
+                .catch(error => {
+                    console.error('Error: ' + error);
+                    addLogs('异常：连接设备失败。error: ' + error)
+                    hideOverlay();
+                    showErrorToast('连接失败，请查看日志信息')
+                });
+        }
+
+        function disconnect() {
+            if (server) {
+                server.disconnect(); // 断开连接
+                server = null; // 将全局变量置空
+                $('#BTlist').html('')
+                stopSending();
+                hideBtn('disconnectBtn')
+                showBtn('scanBTBtn') //展示扫描按钮
+            }
+        }
+        function hexStringToUint8Array(hexString) {
+            if (hexString.length % 2 !== 0) {
+                throw new Error('Hex string length must be even');
+                addLogs('Hex字符串长度必须是偶数')
+            }
+
+            const array = new Uint8Array(hexString.length / 2);
+            for (let i = 0; i < hexString.length; i += 2) {
+                array[i / 2] = parseInt(hexString.substr(i, 2), 16);
+            }
+            return array;
+        }
+        function startSending() {
+            if (!server) {
+                addLogs('请先连接设备')
+                showErrorToast('请先连接设备')
+                return;
+            }
+            addLogs('开始写入波形数据')
+            showBtn('stopSendBtn') //展示停止按钮
+            hideBtn('startSendBtn') //隐藏开始按钮
+            intervalId = setInterval(setBT, 100);
+            //setBT();
+        }
+        function stopSending() {
+            // 停止定时器
+            count = 0;
+            // 重置计数器
+            addLogs('停止写入波形数据')
+            showBtn('startSendBtn') //展示开始按钮
+            hideBtn('stopSendBtn') //隐藏停止按钮
+            if (typeof intervalId !== 'undefined') {
+                clearInterval(intervalId);
+                addLogs('已清除计时器')
+            }
+        }
+        function onDisconnected(event) {
+            const device = event.target;
+            showErrorToast(`设备: ${device.name} 已经断开连接`);
+            addLogs(`设备: ${device.name} 已经断开连接`);
+            server = null;
+            showBtn('scanBTBtn') //展示扫描按钮
+            hideBtn('disconnectBtn')
+        }
+        function setBT() {
+            if (errorCount > 5) {
+                stopSending()
+                return;
+            }
+            if (!server) {
+                errorCount++;
+                addLogs('设备未连接, 未获取到服务')
+                showErrorToast('设备未连接，若已连接请重连')
+                return;
+            }
+            // 计划写入的数据  默认写入的是2.0设备支持的波形数据
+            let currentIndex = count % coyote2wave[selectedOption].length;
+            let valueA = coyote2wave[selectedOption][currentIndex];
+            let valueB = coyote2wave[selectedOption][currentIndex];
+            let serviceId = serviceIdArr[golbaltype - 1]
+            let characteristicIdA = '955a1506-0fe2-f5aa-a094-84b8d4f3e8ad' // 2.0设备蓝牙特性的波形写入 UUID A通道
+            let characteristicIdB = '955a1505-0fe2-f5aa-a094-84b8d4f3e8ad' //b通道
+            if (golbaltype === 2) {
+                // 切换计划写入的数据  为3.0设备支持的波形数据
+                currentIndex = count % coyote3wave[selectedOption].length
+                valueA = 'B0000000' + coyote3wave[selectedOption][currentIndex] + coyote3wave[selectedOption][currentIndex]
+                characteristicIdA = '0000150a-0000-1000-8000-00805f9b34fb' // 3.0设备蓝牙特性的波形写入 UUID (AB通道相同)
+
+                server.getPrimaryService(serviceId)
+                    .then(service => {
+                        // 获取特性A
+                        return service.getCharacteristic(characteristicIdA);
+                    })
+                    .then(characteristicA => {
+                        // 写入A通道
+                        characteristicA.writeValue(hexStringToUint8Array(valueA));
+                    }).then(() => {
+                        count++;
+                        if (count % 100 === 0) {
+                            addLogs('写入成功，写入次数' + count);
+                        }
+                    })
+                    .catch(error => {
+                        errorCount++;
+                        addLogs('波形写入异常：' + error)
+                        showErrorToast('波形写入异常：' + error);
+                    });
+            }
+            else {
+                server.getPrimaryService(serviceId)
+                    .then(service => {
+                        // 获取特性A
+                        return service.getCharacteristic(characteristicIdA);
+                    })
+                    .then(characteristicA => {
+                        // 写入值A
+                        characteristicA.writeValue(hexStringToUint8Array(valueA))
+                        // 2.0需要获取B通道特性
+                        return server.getPrimaryService(serviceId)
+                            .then(service => service.getCharacteristic(characteristicIdB));
+
+                    })
+                    .then(characteristicB => {
+                        // 写入值B
+                        characteristicB.writeValue(hexStringToUint8Array(valueB))
+                        // 写入计数器
+                        count++;
+                        if (count % 100 === 0) {
+                            addLogs('写入成功，写入次数' + count)
+                        }
+                    })
+                    .catch(error => {
+                        errorCount++;
+                        addLogs('写入异常：' + error)
+                        showErrorToast('写入异常：' + error);
+                    });
+            }
+        }
+
+        function showSuccessToast(message) {
+            let notyf = new Notyf();
+            notyf.success(message);
+        }
+
+        function showErrorToast(message) {
+            let notyf = new Notyf();
+            notyf.error(message);
+        }
+
+        function showOverlay() {
+            document.getElementById("overlay").style.display = "block";
+        }
+
+        function hideOverlay() {
+            document.getElementById("overlay").style.display = "none";
+            hiddenLoader();
+            hideScanBT();
+        }
+
+        function showLoader() {
+            document.getElementById("loader").style.display = "block";
+            setTimeout(hideOverlay, 60 * 1000); //最多1分钟自动消失
+            setTimeout(hiddenLoader, 60 * 1000); //最多1分钟自动消失
+        }
+
+        function hiddenLoader() {
+            document.getElementById("loader").style.display = "none";
+        }
+
+        function showScanBT() {
+            document.getElementById("scanBT").style.visibility = "visible";
+        }
+
+        function hideScanBT() {
+            document.getElementById("scanBT").style.visibility = "hidden";
+        }
+
+        function toggleShowScanBT() {
+            if (document.getElementById("overlay").style.display == "block") {
+                hideOverlay();
+                hiddenLoader();
+                hideScanBT();
+            } else {
+                showOverlay();
+                showScanBT();
+            }
+        }
+
+        function hideBtn(id) {
+            document.getElementById(id).style.display = "none";
+        }
+
+        function showBtn(id) {
+            document.getElementById(id).style.display = "block";
+        }
+
+        function removeDisplayNone(id) {
+            document.getElementById(id).classList.remove('display-none');
+        }
+
+        function addLogs(log) {
+            let time = new Date().toLocaleTimeString();
+            let logs = document.getElementById('logs');
+            logs.innerHTML += time + ": " + log + '<br>';
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function changeWave() {
+            selectedOption = document.getElementById("selectDevice").value;
+            addLogs('切换波形为: ' + selectedOption);
+        }
+
+        window.onload = function () {
+            addLogs('页面加载完成');
+            addLogs('尚未连接设备');
+            showSuccessToast('请点击扫描按钮开始扫描');
+        }
+
+    </script>
+    <style>
+        .overlay {
+            display: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 2;
+            cursor: pointer;
+        }
+
+        .loader {
+            display: none;
+            width: 50px;
+            padding: 8px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: #ffe99d;
+            --_m:
+                conic-gradient(#0000 10%, #000),
+                linear-gradient(#000 0 0) content-box;
+            -webkit-mask: var(--_m);
+            mask: var(--_m);
+            -webkit-mask-composite: source-out;
+            mask-composite: subtract;
+            animation: l3 1s infinite linear;
+            position: absolute;
+            top: 50%;
+            left: calc(50% - 25px);
+        }
+
+        @keyframes l3 {
+            to {
+                transform: rotate(1turn)
+            }
+        }
+
+        .contain-item {
+            display: flex;
+            justify-content: center;
+            padding: 20px 0 12px 0;
+            flex-direction: column;
+            align-items: center;
+            color: #ffe99d;
+        }
+
+        .close-btn {
+            background-color: transparent;
+            border: 1px solid #ffe99d;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            color: #ffe99d;
+            transition: 0.3s;
+        }
+
+        .close-btn:hover {
+            background-color: #ffe99d;
+            color: #000;
+        }
+
+        .contain-item>*:not(:first-child) {
+            margin-top: 20px;
+        }
+
+        .fixed-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .visible-hidden {
+            visibility: hidden;
+        }
+
+        .common-btn {
+            padding: 8px 50px;
+            border-radius: 5px;
+            background-color: #ffe99d;
+            color: #000;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .red-btn {
+            background-color: #fd3131;
+        }
+
+        .display-none {
+            display: none;
+            border: none;
+        }
+
+        .logs-title {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            margin-top: 26px;
+        }
+
+        .logs {
+            height: 200px;
+            overflow-y: scroll;
+            border: 1px solid #ffe99d;
+            margin: 10px 20px 0px 20px;
+        }
+
+        *::-webkit-scrollbar {
+            width: 4px;
+            /* 设置滚动条的宽度为1px */
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background-color: #ffe99d;
+            /* 设置滚动条按钮的颜色为蓝色 */
+        }
+    </style>
+</body>
+
+</html>

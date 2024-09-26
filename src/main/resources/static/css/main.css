@@ -1,0 +1,110 @@
+/* main.css */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    height: 100%;
+    background: linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), url('/static/images/main.jpg');
+    background-size: cover;
+}
+
+.blurred-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    filter: blur(8px);
+    z-index: -1;
+}
+
+.button-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px; /* 按钮之间的间距 */
+    position: fixed;
+    bottom: 60px; /* 导航栏高度为60px，按钮从导航栏上方开始 */
+    left: 0;
+    right: 0;
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto; /* 居中按钮 */
+}
+
+.button {
+    display: block;
+    text-align: center;
+    padding: 20px; /* 放大按钮 */
+    background-color: transparent; /* 初始背景色为透明 */
+    border: 3px solid rgba(255, 182, 193, 0.8); /* 按钮边框 */
+    color: #FF69B4;
+    text-decoration: none;
+    border-radius: 12px; /* 圆角按钮 */
+    font-size: 1.5em; /* 增大字体 */
+    transition: background-color 0.3s ease, color 0.3s ease;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+}
+
+.button:hover {
+    background-color: rgba(255, 182, 193, 0.8);
+    color: #fff;
+}
+
+/* 底部导航条 */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(to right, #ffdde1, #ee9ca7); /* 从浅粉到玫瑰粉的渐变 */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    height: 60px;
+}
+
+
+/* 导航项样式 */
+.nav-item {
+    text-align: center;
+    color: #333; /* 文字颜色 */
+    text-decoration: none; /* 去除下划线 */
+    font-size: 16px;
+}
+
+/* 导航图标 */
+.nav-item i {
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* 导航项悬停效果 */
+.nav-item:hover {
+    color: mediumpurple; /* 文字颜色变化 */
+}
+
+@media (max-width: 768px) {
+    .button-container {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        padding: 15px;
+        bottom: 80px; /* 保持按钮距离底部导航栏 */
+    }
+
+    .button {
+        padding: 18px;
+        font-size: 1.2em;
+    }
+
+}
+
+/* 加载动画 */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+body {
+    animation: fadeIn 1s ease-in;
+}

@@ -1,0 +1,41 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.carousel {
+    position: relative;
+    width: 300px;
+    height: 100px;
+    overflow: hidden;
+    margin: auto;
+    border: 1px solid #ccc;
+}
+
+.carousel-item {
+    display: none;
+    height: 100%;
+    line-height: 100px;
+    text-align: center;
+    font-size: 20px;
+}
+
+.carousel-item.active {
+    display: block;
+}
+
+button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    cursor: pointer;
+}
+
+.prev {
+    left: 10px;
+}
+
+.next {
+    right: 10px;
+}

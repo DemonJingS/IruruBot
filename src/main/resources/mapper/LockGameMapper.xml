@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jing.mapper.LockGameMapper">
+    <resultMap id="BaseResultMap" type="com.jing.mapper.entity.LockGame">
+        <result column="lockid" property="lockId" jdbcType="CHAR"/>
+        <result column="userid" property="userId" jdbcType="VARCHAR"/>
+        <result column="username" property="userName" jdbcType="VARCHAR"/>
+        <result column="tgusername" property="tgUserName" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="CHAR"/>
+        <result column="modeid" property="modeId" jdbcType="CHAR"/>
+        <result column="pausecount" property="pauseCount" jdbcType="CHAR"/>
+        <result column="difficulty" property="difficulty" jdbcType="CHAR"/>
+        <result column="jointime" property="joinTime" jdbcType="TIMESTAMP"/>
+        <result column="starttime" property="startTime" jdbcType="TIMESTAMP"/>
+        <result column="endtime" property="endTime" jdbcType="TIMESTAMP"/>
+        <result column="pausetime" property="pauseTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" suffix=")" prefixOverrides="and">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")"
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" suffix=")" prefixOverrides="and">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")"
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+        lockid
+        , userid, username, tgusername, status,modeid, pausecount, difficulty, jointime,starttime, endtime, pausetime
+    </sql>
+
+
+    <select id="selectRegister" resultMap="BaseResultMap" parameterType="com.jing.mapper.entity.LockGame">
+        select
+        <include refid="Base_Column_List"/>
+        from t_lockgame
+        where userid = #{userId,jdbcType=VARCHAR}
+    </select>
+    <select id="selectByGamerId" resultMap="BaseResultMap" parameterType="com.jing.mapper.entity.LockGame">
+        select
+        <include refid="Base_Column_List"/>
+        from t_lockgame
+        where userid = #{userId,jdbcType=VARCHAR}
+    </select>
+
+    <!--查询 是否注册过-->
+    <select id="selectByUserId" resultMap="BaseResultMap" parameterType="com.jing.mapper.entity.LockGame">
+        select
+        <include refid="Base_Column_List"/>
+        from t_lockgame
+        where userid = #{userId,jdbcType=VARCHAR} and status in ('1','2')
+    </select>
+
+    <!--注册游戏-->
+    <insert id="insertRegisterLockGame" parameterType="com.jing.mapper.entity.LockGame">
+        insert into t_lockgame (lockid, userid, username, tgusername, status, modeid, difficulty, pausecount, jointime,
+                                starttime, endtime, pausetime)
+        values (#{lockId,jdbcType=CHAR}, #{userId,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR},
+                #{tgUserName,jdbcType=VARCHAR},
+                #{status,jdbcType=CHAR},
+                #{modeId,jdbcType=CHAR}, #{difficulty,jdbcType=CHAR}, #{pauseCount,jdbcType=CHAR}, now(),
+                now(), #{endTime,jdbcType=TIMESTAMP}, #{pauseTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <!--暂停开始游戏-->
+    <update id="updateContinueLockGame" parameterType="com.jing.mapper.entity.LockGame">
+        update t_lockgame
+        set status= #{status,jdbcType=CHAR},
+            endtime = #{endTime,jdbcType=TIMESTAMP}
+        where userid = #{userId,jdbcType=VARCHAR}
+          and status = '2'
+    </update>
+
+    <update id="updateRollLockGameTime" parameterType="com.jing.mapper.entity.LockGame">
+        update t_lockgame
+        set endtime = #{endTime,jdbcType=TIMESTAMP}
+        where userid = #{userId,jdbcType=VARCHAR}
+          and status in ('1', '2')
+    </update>
+
+    <update id="updateRollLockGameNum" parameterType="com.jing.mapper.entity.LockGame">
+        update t_lockgame
+        set addtimenum = #{addTimeNum,jdbcType=INTEGER}
+        where userid = #{userId,jdbcType=VARCHAR}
+    </update>
+    <!--随机减时-->
+    <update id="updateMinusLockGameNum" parameterType="com.jing.mapper.entity.LockGame">
+        update t_lockgame
+        set endtime = #{endTime,jdbcType=TIMESTAMP}
+        where userid = #{userId,jdbcType=VARCHAR}
+    </update>
+
+    <!--删除游戏-->
+    <update id="updateDeleteLockGame" parameterType="com.jing.mapper.entity.LockGame">
+        update t_lockgame
+        set status= #{status,jdbcType=CHAR}
+        where userid = #{userId,jdbcType=VARCHAR}
+          and status in ('1', '2')
+    </update>
+
+    <!--游戏结束-->
+    <update id="updateEndLockGame" parameterType="com.jing.mapper.entity.LockGame">
+        update t_lockgame
+        set status= #{status,jdbcType=CHAR},
+            endtime = now()
+        where userid = #{userId,jdbcType=VARCHAR}
+    </update>
+
+    <!--当完成挑战以后删除-->
+    <delete id="deleteLockGame" parameterType="com.jing.mapper.entity.LockGame">
+        delete
+        from t_lockgame
+        where userid = #{userId,jdbcType=VARCHAR}
+    </delete>
+
+    <delete id="deleteLockGameToMinus" parameterType="com.jing.mapper.entity.LockGame">
+        delete
+        from t_lockgame
+        where userid = #{userId,jdbcType=VARCHAR}
+          and status = '3'
+
+    </delete>
+    <!--定时任务-->
+    <update id="updateLockGameAddTimeNum" parameterType="com.jing.mapper.entity.LockGame">
+        update t_lockgame
+        set addtimenum   ='0',
+            minustimenum ='0'
+        where status in ('0', '1', '2')
+    </update>
+    <update id="updateLockGameEndTime" parameterType="com.jing.mapper.entity.LockGame">
+        update t_lockgame
+        set endtime = #{endTime,jdbcType=TIMESTAMP}
+        where userid = #{userId,jdbcType=VARCHAR}
+    </update>
+    <update id="updatePauseStatusAndPauseTime" parameterType="com.jing.mapper.entity.LockGame">
+        update t_lockgame
+        set status = #{status,jdbcType=CHAR},
+            pausecount = #{pauseCount,jdbcType=CHAR},
+            pausetime = now()
+        where userid = #{userId,jdbcType=VARCHAR}
+    </update>
+    <update id="updateContinueChallenge" parameterType="com.jing.mapper.entity.LockGame">
+        update t_lockgame
+        set status = '1',
+            endtime = #{endTime,jdbcType=TIMESTAMP}
+        where userid = #{userId,jdbcType=VARCHAR}
+
+    </update>
+
+    <delete id="deleteFinishLockGame" parameterType="java.lang.String">
+        delete
+        from t_lockgame
+        where userid = #{userId,jdbcType=VARCHAR}
+    </delete>
+
+
+</mapper>

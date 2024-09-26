@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jing.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="com.jing.mapper.entity.User">
+        <result column="userid" property="userId" jdbcType="VARCHAR"/>
+        <result column="username" property="userName" jdbcType="VARCHAR"/>
+        <result column="tgusername" property="tgUserName" jdbcType="VARCHAR"/>
+        <result column="flag" property="flag" jdbcType="CHAR"/>
+        <result column="status" property="status" jdbcType="CHAR"/>
+        <result column="addtimenum" property="addTimeNum" jdbcType="INTEGER"/>
+        <result column="minustimenum" property="minusTimeNum" jdbcType="INTEGER"/>
+        <result column="jointime" property="joinTime" jdbcType="TIMESTAMP"/>
+        <result column="lasttime" property="lastTime" jdbcType="TIMESTAMP"/>
+        <result column="xpinfo" property="xpInfo" jdbcType="VARCHAR"/>
+        <result column="clothes" property="clothes" jdbcType="VARCHAR"/>
+        <result column="toys" property="toys" jdbcType="VARCHAR"/>
+        <result column="betaid" property="betaId" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        userid
+        , username, tgusername,flag,status,addtimenum,minustimenum,jointime,lasttime,xpinfo,clothes,toys,betaid
+    </sql>
+
+
+    <select id="selectUserByUserId" resultType="com.jing.mapper.entity.User">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user
+        where userid=#{userId}
+    </select>
+    <select id="selectUserByUserIdForUpate" resultType="com.jing.mapper.entity.User">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user where userid=#{userId} FOR UPDATE
+    </select>
+
+    <!--注册用户-->
+    <insert id="insertUser" parameterType="com.jing.mapper.entity.User">
+        insert into t_user (userid, username, tgusername, flag, status, addtimenum, minustimenum, jointime)
+        values (#{userId,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{tgUserName,jdbcType=VARCHAR},
+                #{flag,jdbcType=CHAR}, #{status,jdbcType=CHAR}, #{addTimeNum,jdbcType=INTEGER},
+                #{minusTimeNum,jdbcType=INTEGER},
+                now())
+    </insert>
+
+    <!--性癖-->
+    <update id="updateUserInfoXP" parameterType="com.jing.mapper.entity.User">
+        update t_user
+        set xpinfo=#{xpInfo}
+        where userid = #{userId}
+    </update>
+
+    <!--衣服-->
+    <update id="updateUserInfoClothes" parameterType="com.jing.mapper.entity.User">
+        update t_user
+        set clothes=#{clothes}
+        where userid = #{userId}
+    </update>
+
+    <!--玩具-->
+    <update id="updateUserInfoToys" parameterType="com.jing.mapper.entity.User">
+        update t_user
+        set toys=#{toys}
+        where userid = #{userId}
+    </update>
+    <update id="updateUserInfo" parameterType="com.jing.mapper.entity.User">
+        update t_user
+        set xpinfo=#{xpInfo},
+            clothes=#{clothes},
+            toys=#{toys}
+        where userid = #{userId}
+    </update>
+
+
+    <update id="updateUserStatus">
+        update t_user
+        set status='2'
+        where userid = #{userId}
+    </update>
+
+    <update id="updateAddTimeNum" parameterType="com.jing.mapper.entity.User">
+        update t_user
+        set addtimenum =#{addTimeNum}
+        where userid = #{userId}
+    </update>
+    <update id="updateAddAndMinusTimeNum">
+        update t_user
+        set addtimenum   = 0,
+            minustimenum = 0
+        where status = '1'
+    </update>
+    <update id="updateMinusTimeNum" parameterType="com.jing.mapper.entity.User">
+
+        update t_user
+        set minustimenum =#{minusTimeNum}
+        where userid = #{userId}
+    </update>
+
+
+</mapper>

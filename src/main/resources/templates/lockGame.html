@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>带锁挑战</title>
+    <script type="text/javascript" th:src="@{https://telegram.org/js/telegram-web-app.js}"></script>
+    <script th:src="@{https://kit.fontawesome.com/3f2164ccf1.js}" crossorigin="anonymous"></script>
+    <script th:src="@{https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/static/css/lockGame.css}">
+</head>
+<body>
+
+<!-- 返回按钮 -->
+<button class="back-button" onclick="goBack()">
+    <i class="fa-solid fa-arrow-left"></i>
+</button>
+
+<div class="welcome-message">欢迎来到带锁挑战!</div>
+
+<!-- 模式选择按钮 -->
+<div class="button-container" id="modeSelection">
+    <button class="button" id="gameMode">游戏模式</button>
+    <button class="button" id="timerMode">倒计时模式</button>
+    <button class="button">待定</button>
+    <button class="button">待定</button>
+</div>
+
+<!-- 难度选择按钮 -->
+<div class="button-container hidden" id="difficultySelection">
+    <button class="difficulty-button" data-difficulty="1">简单</button>
+    <button class="difficulty-button" data-difficulty="2">普通</button>
+    <button class="difficulty-button" data-difficulty="3">困难</button>
+    <button class="difficulty-button" data-difficulty="4">地狱</button>
+    <button class="start-button disabled">开始挑战</button>
+</div>
+
+<!-- 倒计时输入框 -->
+<div class="button-container hidden" id="timerSelection">
+    <input type="number" id="timerInput" placeholder="输入倒计时时间 (单位:分钟)">
+    <button class="start-button disabled">开始挑战</button>
+</div>
+
+<div class="bottom-nav">
+    <a th:href="@{/main}" class="nav-item">
+        <i class="fa-solid fa-house"></i>
+        <span>主页</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fa-solid fa-clock"></i>
+        <span>计时器</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fa-solid fa-list-check"></i>
+        <span>任务</span>
+    </a>
+    <a th:href="@{/user}" class="nav-item">
+        <i class="fa-solid fa-user"></i>
+        <span>我的</span>
+    </a>
+</div>
+<script>
+    function goBack() {
+        history.back();
+    }
+
+    const tg = window.Telegram.WebApp;
+    const userId = tg.initDataUnsafe.user.id;
+    const userName = `${tg.initDataUnsafe.user.first_name} ${tg.initDataUnsafe.user.last_name}`;
+    const tgUserName = tg.initDataUnsafe.user.username;
+    document.addEventListener('DOMContentLoaded', function () {
+        const gameModeButton = document.getElementById('gameMode');
+        const timerModeButton = document.getElementById('timerMode');
+        const difficultyButtons = document.querySelectorAll('.difficulty-button');
+        const timerInput = document.getElementById('timerInput');
+
+        let selectedDifficulty = null; // 用于存储选择的难度
+        let selectedTime = null; // 用于存储输入的倒计时时间
+
+        // 选择游戏模式，显示难度选择
+        gameModeButton.addEventListener('click', function () {
+            document.getElementById('modeSelection').classList.add('hidden');
+            document.getElementById('difficultySelection').classList.remove('hidden');
+        });
+
+        // 选择倒计时模式，显示输入框
+        timerModeButton.addEventListener('click', function () {
+            document.getElementById('modeSelection').classList.add('hidden');
+            document.getElementById('timerSelection').classList.remove('hidden');
+        });
+
+        // 选择难度并启用开始按钮
+        difficultyButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                selectedDifficulty = this.getAttribute('data-difficulty');
+                document.querySelector('.start-button.disabled').classList.remove('disabled');
+            });
+        });
+
+        // 输入倒计时时间后启用开始按钮
+        timerInput.addEventListener('input', function () {
+            selectedTime = this.value;
+            if (selectedTime > 0) {
+                document.querySelector('#timerSelection .start-button').classList.remove('disabled');
+            } else {
+                document.querySelector('#timerSelection .start-button').classList.add('disabled');
+            }
+        });
+
+        // 点击“开始挑战”按钮时发送数据到后端
+        document.querySelectorAll('.start-button').forEach(function (button) {
+            button.addEventListener('click', function () {
+                if (!this.classList.contains('disabled')) {
+                    // 检查当前是游戏模式还是倒计时模式
+                    if (selectedDifficulty !== null) {
+                        const lockGameInDTO = {
+                            gamerId: userId,
+                            gameName: userName,
+                            tgUserName: tgUserName,
+                            mode: 1, // 游戏模式
+                            difficulty: selectedDifficulty
+                        };
+                        axios({
+                            method: 'POST',
+                            url: '/startGameMode',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            data: JSON.stringify(lockGameInDTO)
+                        }).then(response => {
+                            console.log('游戏模式数据已发送:', response.data);
+                            sessionStorage.setItem('lockGameOutDTO', JSON.stringify(response.data));
+                            window.location.href = response.data.url;
+                        }).catch(error => {
+                            console.error('发送游戏模式数据失败:', error);
+                        });
+
+                    } else if (selectedTime > 0) {
+
+                        const lockGameInDTO = {
+                            gamerId: userId,
+                            gameName: userName,
+                            tgUserName: tgUserName,
+                            mode: 2, // 倒计时模式
+                            time: selectedTime
+                        };
+                        axios({
+                            method: 'POST',
+                            url: '/startCountdown',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            data: JSON.stringify(lockGameInDTO)
+                        }).then(response => {
+                            console.log('倒计时模式数据已发送:', response.data);
+                            sessionStorage.setItem('lockGameOutDTO', JSON.stringify(response.data));
+                            window.location.href = response.data.url;
+                        }).catch(error => {
+                            console.error('发送倒计时模式失败:', error);
+                        });
+                    }
+                }
+            });
+        });
+    });
+
+</script>
+<script th:src="@{/static/js/lockGame.js}"></script>
+</body>
+</html>

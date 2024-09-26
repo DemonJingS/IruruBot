@@ -1,0 +1,170 @@
+/* 基础样式 */
+body {
+    font-family: 'Arial', sans-serif;
+    background: url('/static/images/lockGame.jpg');
+    text-align: center;
+    color: #333;
+    padding-bottom: 80px; /* 为固定导航栏腾出空间 */
+    overflow: hidden; /* 禁止上下滑动 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-size: cover; /* 背景图全屏覆盖 */
+    background-position: center; /* 背景图居中显示 */
+    background-repeat: no-repeat;
+    height: 100vh; /* 页面高度为视口高度 */
+    min-height: 100%; /* 最小高度为 100% */
+    width: 100%; /* 页面宽度为 100% */
+}
+
+/* 返回按钮样式 */
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: transparent;
+    border: none;
+    color: #ff6584;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.back-button i {
+    margin-right: 5px;
+}
+
+/* 欢迎语样式 */
+.welcome-message {
+    margin: 30px 0;
+    font-size: 32px; /* 欢迎语字体增大 */
+    color: #ff85a1; /* 修改为柔和的粉色调 */
+}
+
+/* 按钮容器样式 */
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px; /* 最大宽度限制 */
+    margin: 0 auto;
+}
+
+/* 按钮样式 */
+.button, .difficulty-button, .start-button {
+    width: 80%; /* 按钮宽度放大 */
+    max-width: 300px; /* 设置最大宽度 */
+    margin: 10px 0; /* 按钮上下间距 */
+    background-color: transparent; /* 初始背景透明 */
+    color: mediumpurple;
+    border: 2px solid #ff6584;
+    border-radius: 30px;
+    padding: 20px 20px; /* 按钮尺寸增大 */
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    display: block; /* 单列显示 */
+    font-size:20px;
+    font-weight:900;
+}
+
+/* 按钮悬停样式 */
+.button:hover, .difficulty-button:hover, .start-button:hover {
+    background-color: #ff6584;
+    color: #fff;
+}
+
+/* 难度按钮样式 */
+.difficulty-button {
+    border-radius: 20px;
+    padding: 20px 20px; /* 按钮尺寸增大 */
+}
+
+/* 开始挑战按钮样式 */
+.start-button {
+    cursor: not-allowed;
+}
+
+.start-button:not(.disabled) {
+    cursor: pointer;
+    background-color: #ff6584;
+    color: #fff;
+}
+
+/* 隐藏元素 */
+.hidden {
+    display: none;
+}
+
+/* 输入框样式 */
+#timerInput {
+    width: 80%;
+    padding: 12px 20px;
+    margin: 10px auto;
+    display: block;
+    border: 2px solid #f9c0d8;
+    border-radius: 25px;
+    background-color: #fffafc;
+    font-size: 16px;
+    color: #555;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+/* 输入框获取焦点时的效果 */
+#timerInput:focus {
+    border-color: #ff8bb6;
+    box-shadow: 0 0 8px rgba(255, 139, 182, 0.6);
+}
+
+/* placeholder 样式 */
+#timerInput::placeholder {
+    color: #d8a4b1;
+    font-style: italic;
+}
+
+
+
+/* 底部导航条 */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(to right, #ffdde1, #ee9ca7); /* 从浅粉到玫瑰粉的渐变 */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    height: 60px;
+}
+
+
+/* 导航项样式 */
+.nav-item {
+    text-align: center;
+    color: #333; /* 文字颜色 */
+    text-decoration: none; /* 去除下划线 */
+    font-size: 16px;
+}
+
+/* 导航图标 */
+.nav-item i {
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* 导航项悬停效果 */
+.nav-item:hover {
+    color: mediumpurple; /* 文字颜色变化 */
+}
+
+/* 加载动画 */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+body {
+    animation: fadeIn 1.5s ease-in;
+}

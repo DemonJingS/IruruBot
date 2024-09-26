@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" th:href="@{/static/css/111.css}">
+  <title>文本轮播展示</title>
+</head>
+
+<body>
+<div class="carousel">
+  <div class="carousel-item active">文本内容 1</div>
+  <div class="carousel-item">文本内容 2</div>
+  <div class="carousel-item">文本内容 3</div>
+</div>
+<button class="prev" onclick="prevSlide()">❮</button>
+<button class="next" onclick="nextSlide()">❯</button>
+
+
+
+
+<script th:src="@{/static/js/script.js}"></script>
+</body>
+</html>

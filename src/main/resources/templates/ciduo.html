@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>记录展示界面</title>
+    <link rel="stylesheet" th:href="@{/static/css/ciduo.css}"> <!-- 引入外部样式文件 -->
+</head>
+<body>
+
+<div class="container">
+    <h2>记录展示界面</h2>
+    <div id="records-container">
+        <div th:each="record : ${records}">
+            <div class="card">
+                <h4 th:text="${record.username}"></h4>
+                <p>锁编号: <span th:text="${record.lockId}"></span></p>
+                <p>模式: <span th:text="${record.mode}"></span></p>
+                <p>难度: <span th:text="${record.difficulty}"></span></p>
+                <span class="arrow" onclick="toggleInfo(event, [[${record.id}]])">展示 ▼</span>
+                <div class="full-info" th:id="'info-' + ${record.id}" style="display: none;">
+                    <p>开始时间: <span th:text="${record.startTime}"></span></p>
+                    <p>结束时间: <span th:text="${record.endTime}"></span></p>
+                    <h5>加时记录:</h5>
+                    <ul th:each="addRecord : ${record.addRecords}">
+                        <li th:text="${addRecord.username} + ': ' + ${addRecord.time} + '分钟 (操作时间: ' + ${addRecord.operationTime} + ')'"></li>
+                    </ul>
+                    <h5>减时记录:</h5>
+                    <ul th:each="subtractRecord : ${record.subtractRecords}">
+                        <li th:text="${subtractRecord.time} + '分钟 (操作时间: ' + ${subtractRecord.operationTime} + ')'"></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pagination" id="pagination"></div>
+</div>
+
+<div class="bottom-nav">
+    <a th:href="@{/main}" class="nav-item">
+        <i class="fa-solid fa-house" aria-hidden="true"></i>
+        <span>主页</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fa-solid fa-clock" aria-hidden="true"></i>
+        <span>计时器</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fa-solid fa-list-check" aria-hidden="true"></i>
+        <span>任务</span>
+    </a>
+    <a th:href="@{/user}" class="nav-item">
+        <i class="fa-solid fa-user" aria-hidden="true"></i>
+        <span>我的</span>
+    </a>
+</div>
+
+<script>
+    const recordsData = /*[[${records}]]*/ []; // 在服务端传入记录数据
+    const recordsPerPage = 3;
+    let currentPage = 1;
+
+    function populateRecords() {
+        const container = document.getElementById('records-container');
+        const pagination = document.getElementById('pagination');
+        const totalPages = Math.ceil(recordsData.length / recordsPerPage);
+
+        // 清空容器
+        container.innerHTML = '';
+        pagination.innerHTML = '';
+
+        // 计算当前页面记录的起始和结束索引
+        const start = (currentPage - 1) * recordsPerPage;
+        const end = Math.min(start + recordsPerPage, recordsData.length);
+
+        // 动态添加记录
+        for (let i = start; i < end; i++) {
+            const record = recordsData[i];
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <h4>${record.username}</h4>
+                <p>锁编号: ${record.lockId}</p>
+                <p>模式: ${record.mode}</p>
+                <p>难度: ${record.difficulty}</p>
+                <span class="arrow" onclick="toggleInfo(event, ${record.id})">展示 ▼</span>
+                <div class="full-info" id="info-${record.id}" style="display: none;">
+                    <p>开始时间: ${record.startTime}</p>
+                    <p>结束时间: ${record.endTime}</p>
+                    <h5>加时记录:</h5>
+                    <ul>${record.addRecords.map(r => `<li>${r.username}: ${r.time}分钟 (操作时间: ${r.operationTime})</li>`).join('')}</ul>
+                    <h5>减时记录:</h5>
+                    <ul>${record.subtractRecords.map(r => `<li>${r.time}分钟 (操作时间: ${r.operationTime})</li>`).join('')}</ul>
+                </div>
+            `;
+            container.appendChild(card);
+        }
+
+        // 创建翻页按钮
+        for (let i = 1; i <= totalPages; i++) {
+            const button = document.createElement('button');
+            button.innerText = i;
+            button.onclick = () => {
+                currentPage = i;
+                populateRecords();
+            };
+            pagination.appendChild(button);
+        }
+    }
+
+    function toggleInfo(event, id) {
+        const info = document.getElementById(`info-${id}`);
+        info.style.display = info.style.display === 'none' ? 'block' : 'none';
+        event.target.textContent = event.target.textContent.includes('展示') ? '收起 ▲' : '展示 ▼';
+    }
+
+    // 初始化记录
+    populateRecords();
+</script>
+
+</body>
+</html>

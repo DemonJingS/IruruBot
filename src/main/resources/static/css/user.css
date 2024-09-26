@@ -1,0 +1,227 @@
+/* 全局样式 */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-image: url('/static/images/user.jpg'); /* 替换为实际背景图片路径 */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+
+/* 容器样式 */
+.container {
+    margin: 20px;
+}
+
+/* 用户卡片 */
+.profile-card {
+    background: rgba(255, 255, 255, 0.3); /* 透明白色背景 */
+    border-radius: 10px; /* 圆角 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    overflow: hidden; /* 隐藏溢出内容 */
+}
+
+/* 用户卡片头部 */
+.profile-header {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1); /* 透明白色背景 */
+    border-bottom: 1px solid #e1e1e1; /* 底部边框 */
+    position: relative;
+}
+
+/* 用户头像 */
+.avatar img {
+    border-radius: 50%; /* 圆形头像 */
+    width: 80px;
+    height: 80px;
+}
+
+/* 用户信息区域 */
+.profile-info {
+    margin-left: 15px;
+}
+
+/* 用户ID和用户名样式 */
+.profile-info #userId,
+.profile-info #userName {
+    display: block;
+}
+
+/* 铭牌样式 */
+.badge {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: #ffd700; /* 高贵的颜色 */
+    color: #ffffff; /* 文字颜色 */
+    padding: 5px 10px;
+    border-radius: 5px; /* 圆角 */
+    font-size: 0.9em;
+}
+
+/* 信息列表 */
+.info-list {
+    padding: 15px;
+}
+
+/* 信息项样式 */
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e1e1e1; /* 底部边框 */
+    padding: 10px 0;
+}
+
+/* 信息项标签 */
+.info-item .label {
+    flex: 1;
+    font-weight: bold;
+}
+
+/* 信息项内容 */
+.info-item span {
+    flex: 2;
+    overflow: hidden; /* 隐藏溢出内容 */
+    text-overflow: ellipsis; /* 超出部分用省略号表示 */
+    white-space: nowrap; /* 不换行 */
+}
+
+/* 编辑按钮样式 */
+.edit-button {
+    background: #ff7f7f; /* 背景色 */
+    color: #ffffff; /* 文字颜色 */
+    border: none; /* 无边框 */
+    border-radius: 5px; /* 圆角 */
+    padding: 5px 10px;
+    cursor: pointer; /* 鼠标样式 */
+}
+
+/* 编辑按钮悬停效果 */
+.edit-button:hover {
+    background: #ff4f4f; /* 背景色变化 */
+}
+
+/* CTA（呼叫行动）按钮 */
+.cta-button {
+    display: block;
+    margin: 20px auto;
+    background: #4CAF50; /* 背景色 */
+    color: #ffffff; /* 文字颜色 */
+    padding: 10px 20px;
+    border-radius: 5px; /* 圆角 */
+    text-align: center;
+    text-decoration: none; /* 去除下划线 */
+    font-weight: bold;
+}
+
+/* CTA按钮悬停效果 */
+.cta-button:hover {
+    background: #45a049; /* 背景色变化 */
+}
+
+/* 底部导航条 */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(to right, #ffdde1, #ee9ca7); /* 从浅粉到玫瑰粉的渐变 */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    height: 60px;
+}
+
+
+/* 导航项样式 */
+.nav-item {
+    text-align: center;
+    color: #333; /* 文字颜色 */
+    text-decoration: none; /* 去除下划线 */
+    font-size: 16px;
+}
+
+/* 导航图标 */
+.nav-item i {
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* 导航项悬停效果 */
+.nav-item:hover {
+    color: mediumpurple; /* 文字颜色变化 */
+}
+
+/* 编辑弹出框 */
+.editor-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* 半透明背景 */
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 编辑内容区域 */
+.editor-content {
+    background: #ffffff; /* 背景色 */
+    border-radius: 10px; /* 圆角 */
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+}
+
+/* 文本框 */
+textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border-radius: 5px; /* 圆角 */
+    border: 1px solid #e1e1e1; /* 边框 */
+    box-sizing: border-box; /* 包含内边距和边框 */
+}
+
+/* 按钮样式 */
+button {
+    background: mediumpurple; /* 背景色 */
+    color: #ffffff; /* 文字颜色 */
+    border: none; /* 无边框 */
+    border-radius: 5px; /* 圆角 */
+    padding: 10px;
+    cursor: pointer; /* 鼠标样式 */
+    margin-right: 10px;
+}
+
+/* 禁用状态按钮样式 */
+button.disabled {
+    background: #bfbfbf; /* 背景色 */
+    cursor: not-allowed; /* 禁用鼠标样式 */
+}
+
+/* 启用状态按钮悬停效果 */
+button.enabled:hover {
+    background: mediumpurple; /* 背景色变化 */
+    transition: background 0.3s ease; /* 平滑过渡效果 */
+}
+
+/* 加载动画 */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+body {
+    animation: fadeIn 1.5s ease-in;
+}
