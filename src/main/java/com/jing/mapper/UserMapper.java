@@ -35,4 +35,6 @@ public interface UserMapper {
     void updateUserInfoToys(@Param("userId") String userId, @Param("toys") String toys);
 
     User selectUserByUserIdForUpate(@Param("userId") String userId);
+
+    void updateUserCode(@Param("userId") String userId, @Param("code") String code);
 }

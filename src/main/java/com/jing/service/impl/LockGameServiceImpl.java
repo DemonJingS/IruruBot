@@ -384,7 +384,7 @@ public class LockGameServiceImpl implements LockGameService {
         String userId = update.getMessage().getFrom().getId().toString();
         String chatId = update.getMessage().getChatId().toString();
         User user = userService.queryUserByUserId(userId);
-        if (user == null ) {
+        if (user == null) {
             return;
         }
         LockGame lockGame = queryGameByGamerId(userId);
@@ -433,7 +433,7 @@ public class LockGameServiceImpl implements LockGameService {
         String[] parts = data.split(":");
         String voteType = parts[0];  // 'agree' or 'reject'
         String initiatedUserId = parts[1];
-        if (userid.equals(initiatedUserId)){
+        if (userid.equals(initiatedUserId)) {
             return;
         }
         User user = userService.queryUserByUserId(userid);
@@ -476,14 +476,14 @@ public class LockGameServiceImpl implements LockGameService {
             log.info("投票通过: initiatedUserId {}", initiatedUserId);
             int pauseCount = Integer.parseInt(lockGame.getPauseCount());
             String strPauseCount = String.valueOf(pauseCount + 1);
-            lockGameMapper.updatePauseStatusAndPauseTime(initiatedUserId, LockGameStatus.LOCK_GAME_STATUS_PAUSE.getStatus(),strPauseCount);
+            lockGameMapper.updatePauseStatusAndPauseTime(initiatedUserId, LockGameStatus.LOCK_GAME_STATUS_PAUSE.getStatus(), strPauseCount);
             pauseService.savePause(lockGame);
             msg = "投票通过允许开锁！";
             agreeVotesMap.remove(initiatedUserId);
             votedUsersMap.remove(initiatedUserId);
             deleteMsgService.deleteNowButton(telegramClient, message);
             // 实现结束投票逻辑...
-        } else if (refuseVotes >= 10 - requiredAgreeVotes) {
+        } else if (refuseVotes > 10 - requiredAgreeVotes) {
             // 达到拒绝票数，结束投票
             log.info("投票未通过: initiatedUserId {}", initiatedUserId);
             msg = "不可以开锁哦！";
@@ -517,20 +517,20 @@ public class LockGameServiceImpl implements LockGameService {
         String userId = continueChallengeInDTO.getPlayerInDTO().getPlayerId();
         LockGame lockGame = lockGameMapper.selectByGamerId(userId);
         LocalDateTime nowTime = LocalDateTime.now();
-        if (lockGame==null){
+        if (lockGame == null) {
             responseOutDTO.setCode(BotResponse.ERROR.getCode());
             responseOutDTO.setUrl("/error");
 
-        }else {
+        } else {
             LocalDateTime pauseTime = LocalDateTime.parse(lockGame.getPauseTime(), GameConstant.DATE_TIME_FORMATTER);
             long seconds = Duration.between(pauseTime, nowTime).getSeconds();
-            if (lockGame.getEndTime()==null) {
+            if (lockGame.getEndTime() == null) {
                 String endTime = nowTime.plusSeconds(seconds).format(GameConstant.DATE_TIME_FORMATTER);
-                lockGameMapper.updateContinueChallenge(userId,endTime);
-            }else {
+                lockGameMapper.updateContinueChallenge(userId, endTime);
+            } else {
                 LocalDateTime endTime = LocalDateTime.parse(lockGame.getEndTime(), GameConstant.DATE_TIME_FORMATTER);
                 String newEndTime = endTime.plusSeconds(seconds).format(GameConstant.DATE_TIME_FORMATTER);
-                lockGameMapper.updateContinueChallenge(userId,newEndTime);
+                lockGameMapper.updateContinueChallenge(userId, newEndTime);
             }
             pauseMapper.updateContinueTime(userId, lockGame.getLockId());
             responseOutDTO.setCode(BotResponse.SUCCESS.getCode());
@@ -545,11 +545,21 @@ public class LockGameServiceImpl implements LockGameService {
         CiDuoOutDTO ciDuoOutDTO = new CiDuoOutDTO();
         String userId = ciDuoInDTO.getUserId();
         List<LockGame> lockGames = finishLockGameMapper.selectByUserId(userId);
-        if (lockGames.isEmpty()){
+        if (lockGames.isEmpty()) {
             ciDuoOutDTO.setMsg("暂无记录");
             return ciDuoOutDTO;
         }
         return null;
+    }
+
+    @Override
+    public List<LockGameLog> showLockGameLog(String playerId) {
+        LockGame lockGame = lockGameMapper.selectByGamerId(playerId);
+        if (lockGame == null) {
+            return null;
+        }
+        return lockGameLogMapper.selectByLockId(lockGame.getLockId());
+
     }
 
     // 根据难度返回所需的同意票数
@@ -632,7 +642,7 @@ public class LockGameServiceImpl implements LockGameService {
         String difficultyMsg = LockGameDifficulty.getMsgByDifficulty(lockGame.getDifficulty());
         if (StringUtils.isEmpty(gameEndTime)) {
             seeLockMsg = String.format("用户名：%s\n状态：%s\n模式：%s\n难度：%s\n开始时间：%s\n结束时间：%s\n请给我狠狠加时!",
-                     userName, statusMsg, modeMsg, difficultyMsg, starTime, "暂时没有结束时间");
+                    userName, statusMsg, modeMsg, difficultyMsg, starTime, "暂时没有结束时间");
             Message message = sendMsgService.sendWithButtonMsg(telegramClient, setButton(userId), chatId, seeLockMsg);
             deleteMsgService.deleteBotCommandMessage(telegramClient, message);
             return;
@@ -648,14 +658,14 @@ public class LockGameServiceImpl implements LockGameService {
 
         } else {
             seeLockMsg = String.format("用户名：%s\n状态：%s\n模式：%s\n难度：%s\n开始时间：%s！\n结束时间：%s！\n请给我狠狠加时!",
-                     userName, statusMsg, modeMsg, difficultyMsg, starTime, gameEndTime);
+                    userName, statusMsg, modeMsg, difficultyMsg, starTime, gameEndTime);
             Message message = sendMsgService.sendWithButtonMsg(telegramClient, setButton(userId), chatId, seeLockMsg);
             deleteMsgService.deleteBotCommandMessage(telegramClient, message);
         }
     }
 
     private InlineKeyboardMarkup setButton(String userId) {
-        InlineKeyboardButton addTimeButton = InlineKeyboardButton.builder().text("请务必帮我狠狠加时!").callbackData("addTime:"+userId).build();
+        InlineKeyboardButton addTimeButton = InlineKeyboardButton.builder().text("请务必帮我狠狠加时!").callbackData("addTime:" + userId).build();
         InlineKeyboardRow row = new InlineKeyboardRow();
         row.add(addTimeButton);
         return InlineKeyboardMarkup.builder().keyboardRow(row).build();

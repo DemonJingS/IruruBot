@@ -32,7 +32,7 @@ public class LockGameInDTO implements Serializable {
     private String gamerId;
 
     @NotEmpty
-    @Length(min = 1, max = 15)
+    @Length(min = 1, max = 30)
     private String gameName;
 
     @Length(min = 1, max = 15)

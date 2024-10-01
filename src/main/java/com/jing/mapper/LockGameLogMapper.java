@@ -3,6 +3,8 @@ package com.jing.mapper;
 import com.jing.mapper.entity.LockGameLog;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @Author：DemonJing
  * @Package：com.jing.mapper
@@ -15,4 +17,6 @@ import org.springframework.stereotype.Repository;
 public interface LockGameLogMapper {
 
     void insertLockGameLog(LockGameLog lockGameLog);
+
+    List<LockGameLog> selectByLockId(String lockId);
 }

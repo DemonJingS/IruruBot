@@ -2,8 +2,11 @@ package com.jing.service;
 
 import com.jing.controller.dto.*;
 import com.jing.mapper.entity.LockGame;
+import com.jing.mapper.entity.LockGameLog;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
+
+import java.util.List;
 
 /**
  * @Author：DemonJing
@@ -94,4 +97,6 @@ public interface LockGameService {
     ResponseOutDTO continueChallenge(ContinueChallengeInDTO continueChallengeInDTO);
 
     CiDuoOutDTO ciDuo(CiDuoInDTO ciDuoInDTO);
+
+    List<LockGameLog> showLockGameLog(String playerId);
 }

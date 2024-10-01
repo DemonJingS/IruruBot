@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>code</title>
+    <script type="text/javascript" th:src="@{https://telegram.org/js/telegram-web-app.js}"></script>
+    <script th:src="@{https://kit.fontawesome.com/3f2164ccf1.js}" crossorigin="anonymous"></script>
+    <script th:src="@{https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/static/css/code.css}">
+</head>
+<body>
+
+<div class="container">
+    <h1 class="title">验证码展示</h1>
+    <button class="generate-btn" id="generateBtn">生成验证码</button>
+    <div class="captcha-box">
+        <span id="captcha" class="captcha-text">验证码将在这里显示</span>
+    </div>
+</div>
+
+<!-- Bottom Navigation Bar -->
+<div class="bottom-nav">
+    <a th:href="@{main}" class="nav-item">
+        <i class="fa-solid fa-house" aria-hidden="true"></i>
+        <span>主页</span>
+    </a>
+    <a th:href="@{/random}" class="nav-item">
+        <i class="fa-solid fa-clock" aria-hidden="true"></i>
+        <span>随机数</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fa-solid fa-list-check" aria-hidden="true"></i>
+        <span>任务</span>
+    </a>
+    <a th:href="@{/user}" class="nav-item">
+        <i class="fa-solid fa-user" aria-hidden="true"></i>
+        <span>我的</span>
+    </a>
+</div>
+
+<script>
+
+    const tg = window.Telegram.WebApp;
+    const userId = tg.initDataUnsafe.user.id;
+    const userName = `${tg.initDataUnsafe.user.first_name} ${tg.initDataUnsafe.user.last_name}`;
+    const tgUserName = tg.initDataUnsafe.user.username;
+    const playerInDTO = {
+        playerId: userId,
+        playerName: userName,
+        tgUserName: tgUserName
+    };
+
+    document.getElementById('generateBtn').addEventListener('click', function() {
+        // 发送请求获取验证码
+       axios({
+           method: 'POST',
+           url: '/getCode',
+           headers: {
+               'Content-Type': 'application/json'
+           },
+           data: JSON.stringify(playerInDTO)
+
+       }).then(response => {
+                // 假设后端返回 { "captcha": "123456" }
+                if (response.data) {
+                    document.getElementById('captcha').innerText = response.data; // 更新验证码
+                } else {
+                    document.getElementById('captcha').innerText = '验证码生成失败';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching captcha:', error);
+                document.getElementById('captcha').innerText = '验证码获取失败';
+            });
+    });
+
+
+</script>
+</body>
+</html>

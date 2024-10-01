@@ -1,0 +1,128 @@
+/* main.css */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+    color: #6a1b9a;
+}
+
+.container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    padding-bottom: 80px; /* 增加底部填充，避免内容被导航栏遮挡 */
+}
+
+h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #4a148c;
+}
+
+.input-group {
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+input[type="number"] {
+    padding: 10px;
+    margin-top: 5px;
+    border: 2px solid #e91e63;
+    border-radius: 5px;
+    width: 200px;
+    transition: border-color 0.3s;
+}
+
+input[type="number"]:focus {
+    border-color: #6a1b9a;
+    outline: none;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #e91e63;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #d81b60;
+}
+
+.random-numbers {
+    margin-top: 20px;
+    font-size: 1.5em;
+    color: #4a148c;
+}
+
+button:hover {
+    background-color: #d81b60;
+}
+
+/* 随机数显示区域 */
+.random-numbers {
+    margin-top: 20px;
+    font-size: 1.5em;
+    color: #4a148c;
+    text-align: center;
+}
+
+/* 底部导航栏保持不变 */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(to right, #ffdde1, #ee9ca7); /* 从浅粉到玫瑰粉的渐变 */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    height: 60px;
+}
+
+.nav-item {
+    text-align: center;
+    color: #333; /* 文字颜色 */
+    text-decoration: none; /* 去除下划线 */
+    font-size: 16px;
+}
+
+.nav-item i {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.nav-item:hover {
+    color: mediumpurple; /* 文字颜色变化 */
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    input[type="number"] {
+        width: 180px;
+    }
+
+    button {
+        padding: 8px 16px;
+        font-size: 1em;
+    }
+
+    h1 {
+        font-size: 1.8em;
+    }
+}

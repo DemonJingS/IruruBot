@@ -3,10 +3,7 @@ package com.jing.controller;
 import com.jing.bot.botEnum.BotResponse;
 import com.jing.bot.gameEnum.LockGameStatus;
 import com.jing.constant.GameConstant;
-import com.jing.controller.dto.PlayerInDTO;
-import com.jing.controller.dto.ResponseOutDTO;
-import com.jing.controller.dto.UserInfoInDTO;
-import com.jing.controller.dto.UserInfoOutDTO;
+import com.jing.controller.dto.*;
 import com.jing.mapper.entity.LockGame;
 import com.jing.mapper.entity.User;
 import com.jing.service.LockGameService;
@@ -53,9 +50,47 @@ public class UserController {
     }
 
     @GetMapping("/ceshi")
-    public String ceshi(){
+    public String ceshi() {
         return "111";
     }
+
+    @GetMapping("/code")
+    public String codePage(){
+        return "code";
+    }
+
+    @GetMapping("/random")
+    public String randomPage(){
+        return "random";
+    }
+
+    @PostMapping("/getCode")
+    @ResponseBody
+    public String getCode(@RequestBody @Valid PlayerInDTO playerInDTO){
+        return userService.generateOrObtainCode(playerInDTO);
+    }
+    @PostMapping("/app/login")
+    @ResponseBody
+    public ResponseOutDTO login(@RequestBody @Valid LoginInDTO loginInDTO) {
+        ResponseOutDTO responseOutDTO = new ResponseOutDTO();
+        responseOutDTO.setCode(BotResponse.ERROR.getCode());
+        if (userService.checkUser(loginInDTO)) {
+            responseOutDTO.setCode(BotResponse.SUCCESS.getCode());
+        }
+        return responseOutDTO;
+    }
+
+    @PostMapping("/app/checkUser")
+    @ResponseBody
+    public ResponseOutDTO checkUser(@RequestBody @Valid LoginInDTO loginInDTO){
+        ResponseOutDTO responseOutDTO = new ResponseOutDTO();
+        responseOutDTO.setCode(BotResponse.ERROR.getCode());
+        if (userService.checkUser(loginInDTO)) {
+            responseOutDTO.setCode(BotResponse.SUCCESS.getCode());
+        }
+        return responseOutDTO;
+    }
+
 
     @PostMapping("/checkPlayer")
     public @ResponseBody ResponseOutDTO getUser(@RequestBody @Valid PlayerInDTO playerInDTO) {

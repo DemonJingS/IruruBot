@@ -58,7 +58,7 @@ public class IruruBotServiceImpl implements IruruBotService {
 
     @Override
     public void mainFunction(TelegramClient telegramClient, Update update) {
-        /*  iruruThreadPool.iruruThreadPool().execute(() -> {*/
+          iruruThreadPool.iruruThreadPool().execute(() -> {
         if (update.hasMessage()&&update.getMessage().hasText() && update.getMessage().isCommand()) {
             log.info("IruruBotService.mainFunction:{}", JSONObject.toJSONString(update));
             if (update.getMessage().isCommand() && update.getMessage().getChat().isUserChat()) {
@@ -105,7 +105,7 @@ public class IruruBotServiceImpl implements IruruBotService {
             }
 
         }
-        //  });
+         });
     }
 
     @Override

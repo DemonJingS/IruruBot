@@ -4,7 +4,7 @@
     <resultMap id="BaseResultMap" type="com.jing.mapper.entity.LockGameLog">
         <result column="chatid" property="chatId" jdbcType="VARCHAR"/>
         <result column="chattitle" property="chatTitle" jdbcType="VARCHAR"/>
-        <result column="lockid" property="lockId" jdbcType="CHAR"/>
+        <result column="lockid" property="lockId" jdbcType="VARCHAR"/>
         <result column="lockuserid" property="lockUserId" jdbcType="VARCHAR"/>
         <result column="lockusername" property="lockUserName" jdbcType="VARCHAR"/>
         <result column="locktgusername" property="lockTgUserName" jdbcType="VARCHAR"/>
@@ -27,6 +27,12 @@
             #{otherUserId,jdbcType=VARCHAR}, #{otherUserName,jdbcType=VARCHAR}, #{otherTgUserName,jdbcType=VARCHAR},
             #{overtime,jdbcType=CHAR}, now())
     </insert>
+    <select id="selectByLockId" resultType="com.jing.mapper.entity.LockGameLog">
+        select <include refid="Base_Column_List"/>
+        from t_lockgamelog
+        where lockid = #{lockId,jdbcType=VARCHAR}
+
+    </select>
 
 
 </mapper>

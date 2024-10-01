@@ -30,7 +30,7 @@ public class PlayerInDTO implements Serializable {
     private String playerId;
 
     @NotEmpty
-    @Length(min = 1, max = 15)
+    @Length(min = 1, max = 30)
     private String playerName;
 
     @Length(max = 15)

@@ -10,17 +10,25 @@
     <link rel="stylesheet" th:href="@{/static/css/main.css}">
 </head>
 <body>
+<div class="time-records-container">
+    <div class="scroll-container">
+        <ul id="timeRecords">
+            <!-- 动态插入记录 -->
+        </ul>
+    </div>
+</div>
+
 
 <div class="blurred-background"></div>
 <div class="button-container">
     <a href="javascript:void(0);" class="button" id="lockChallengeBtn">带锁挑战</a>
     <a th:href="@{/bluetooth}" class="button">郊狼电击</a>
-    <a th:href="@{/roulette}" class="button">时间轮盘</a>
+    <a href="#" class="button">时间轮盘</a>
     <a href="#" class="button">主奴</a>
     <a href="#" class="button">钥匙盒</a>
     <a href="#" class="button">待定</a>
-    <a href="#" class="button">待定</a>
-    <a th:href="@{/ciduo}" class="button">雌堕记录</a>
+    <a href="#" class="button">雌堕记录</a>
+    <a th:href="@{/code}" class="button">验证码</a>
 </div>
 
 <!-- Bottom Navigation Bar -->
@@ -29,9 +37,9 @@
         <i class="fa-solid fa-house" aria-hidden="true"></i>
         <span>主页</span>
     </a>
-    <a th:href="@{ceshi}" class="nav-item">
+    <a th:href="@{/random}" class="nav-item">
         <i class="fa-solid fa-clock" aria-hidden="true"></i>
-        <span>计时器</span>
+        <span>随机数</span>
     </a>
     <a href="#" class="nav-item">
         <i class="fa-solid fa-list-check" aria-hidden="true"></i>
@@ -69,6 +77,61 @@
         });
 
     });
+
+    function updateTimeRecords(lockLog) {
+        const timeRecordsUl = document.getElementById('timeRecords');
+
+        timeRecordsUl.innerHTML = ''; // 清空当前记录
+
+        lockLog.forEach(lockLog => {
+            const li = document.createElement('li');
+            const addNameSpan = document.createElement('span');
+            const actionText = document.createElement('span');
+            const timeSpan = document.createElement('span');
+            if (lockLog.addName===null) {
+                addNameSpan.textContent = '你自己减了:';
+                timeSpan.textContent = ` ${Math.abs(lockLog.time)} 分钟`;
+                timeSpan.style.color = 'green';
+                li.appendChild(addNameSpan);
+                li.appendChild(timeSpan);
+            } else {
+                addNameSpan.textContent = `${lockLog.addName}`;
+                actionText.textContent = ' 帮你加了: ';
+                timeSpan.textContent = `${lockLog.time} 分钟`;
+                addNameSpan.style.color = 'purple';
+                timeSpan.style.color = 'red';
+                li.appendChild(addNameSpan);
+                li.appendChild(actionText)
+                li.appendChild(timeSpan);
+            }
+
+            timeRecordsUl.appendChild(li);
+        });
+        const scrollContainer = document.querySelector('.scroll-container');
+        scrollContainer.scrollTop = scrollContainer.scrollHeight; // 滚动到顶部
+    }
+
+    function fetchRecordsAndUpdate() {
+
+        // 向后端发送请求
+        axios({
+            method: 'POST',
+            url: '/showLockGameLog',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(playerInDTO)
+        }).then(response => {
+            const lockLog = response.data;
+            if (lockLog===null){
+                return;
+            }
+            updateTimeRecords(lockLog);
+        });
+
+    }
+    document.addEventListener('DOMContentLoaded', fetchRecordsAndUpdate);
+
 </script>
 </body>
 </html>

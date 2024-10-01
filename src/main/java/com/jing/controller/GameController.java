@@ -5,6 +5,7 @@ import com.jing.bot.botEnum.BotResponse;
 import com.jing.bot.gameEnum.LockGameMode;
 import com.jing.controller.dto.*;
 import com.jing.mapper.entity.LockGame;
+import com.jing.mapper.entity.LockGameLog;
 import com.jing.service.LockGameService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
@@ -15,6 +16,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @Author：DemonJing
@@ -32,9 +37,8 @@ public class GameController {
     private LockGameService lockGameService;
 
 
-    @GetMapping("main")
+    @GetMapping("/main")
     public String gameMainPage() {
-
         return "main";
     }
 
@@ -53,7 +57,6 @@ public class GameController {
         return "countdown";
     }
 
-
     @GetMapping("/bluetooth")
     public String bluetoothPage() {
         return "bluetooth";
@@ -68,6 +71,24 @@ public class GameController {
     public String roulettePage() {
         return "roulette";
     }
+
+    @PostMapping("/showLockGameLog")
+    @ResponseBody
+    public List<LockLogOutDTO> showLockGameLog(@RequestBody @Valid PlayerInDTO playerInDTO) {
+        List<LockGameLog> lockGameLogs = lockGameService.showLockGameLog(playerInDTO.getPlayerId());
+        List<LockLogOutDTO> lockLogOutDTOS = new ArrayList<>();
+        if (lockGameLogs == null) {
+            return Collections.emptyList();
+        }
+        for (LockGameLog lockGameLog : lockGameLogs) {
+            LockLogOutDTO lockLogOutDTO = new LockLogOutDTO();
+            lockLogOutDTO.setAddName(lockGameLog.getOtherUserName());
+            lockLogOutDTO.setTime(lockGameLog.getOvertime());
+            lockLogOutDTOS.add(lockLogOutDTO);
+        }
+        return lockLogOutDTOS;
+    }
+
 
     @PostMapping("/lockGameInfo")
     @ResponseBody
@@ -112,9 +133,7 @@ public class GameController {
     @ResponseBody
     public ResponseOutDTO minusTime(@RequestBody @Valid MinusTimeInDTO minusTimeInDTO) {
         log.info("minusTimeInDTO:{}", JSONObject.toJSONString(minusTimeInDTO));
-
         return lockGameService.minusTime(minusTimeInDTO);
-
     }
 }
 

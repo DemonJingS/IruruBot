@@ -2,7 +2,9 @@ package com.jing.service.impl;
 
 import com.jing.bot.botEnum.BotResponse;
 import com.jing.bot.botEnum.UserEnum;
+import com.jing.bot.botEnum.UserStatus;
 import com.jing.constant.UserConstant;
+import com.jing.controller.dto.LoginInDTO;
 import com.jing.controller.dto.PlayerInDTO;
 import com.jing.controller.dto.ResponseOutDTO;
 import com.jing.controller.dto.UserInfoInDTO;
@@ -13,11 +15,12 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import com.jing.mapper.entity.User;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @Author：DemonJing
@@ -47,8 +50,8 @@ public class UserServiceImpl implements UserService {
             user.setUserId(userId);
             user.setUserName(userName);
             user.setTgUserName(tgUserName);
-            user.setFlag(UserEnum.USER_FLAG_BETA.getCode());
-            user.setStatus(UserEnum.USER_STATUS_BAN.getCode());
+            user.setFlag(UserEnum.USER_FLAG_PUBLIC.getCode());
+            user.setStatus(UserEnum.USER_STATUS_NORMAL.getCode());
             user.setAddTimeNum(UserConstant.USER_ADD_TIME_NUM);
             user.setMinusTimeNum(UserConstant.USER_MINUS_TIME_NUM);
             userMapper.insertUser(user);
@@ -76,7 +79,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public  ResponseOutDTO queryAndReplaceUser(PlayerInDTO playerInDTO) {
+    public ResponseOutDTO queryAndReplaceUser(PlayerInDTO playerInDTO) {
         User user = userMapper.selectUserByUserId(playerInDTO.getPlayerId());
         ResponseOutDTO responseOutDTO = new ResponseOutDTO();
         if (user != null) {
@@ -122,6 +125,38 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateMinusTimeNum(String userId, int minusTimeNum) {
         userMapper.updateMinusTimeNum(userId, minusTimeNum);
+    }
+
+    @Override
+    public boolean checkUser(LoginInDTO loginInDTO) {
+        User user = userMapper.selectUserByUserId(loginInDTO.getUserId());
+        if (user == null) {
+            return false;
+        } else {
+            if (StringUtils.equals(user.getStatus(), UserStatus.USER_STATUS_BAN.getStatus())) {
+                return false;
+            } else {
+                return StringUtils.equals(user.getCode(), loginInDTO.getCode());
+            }
+        }
+    }
+
+    @Override
+    public String generateOrObtainCode(PlayerInDTO playerInDTO) {
+        User user = userMapper.selectUserByUserId(playerInDTO.getPlayerId());
+        if (user == null) {
+            return "";
+        }
+        if (StringUtils.isEmpty(user.getCode())) {
+            StringBuilder code = new StringBuilder();
+            for (int i = 0; i < 6; i++) {
+                int digit = ThreadLocalRandom.current().nextInt(0, 10); // 生成0到9之间的随机数
+                code.append(digit); // 将随机数添加到验证码中
+            }
+            userMapper.updateUserCode(playerInDTO.getPlayerId(),code.toString());
+            return code.toString();
+        }
+        return user.getCode();
     }
 
     @Nullable

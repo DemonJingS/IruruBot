@@ -18,7 +18,6 @@ public class GroupCommands {
         return List.of(
                 new BotCommand("/seelock","发送或回复显示自己或他人带锁信息"),
                 new BotCommand("/vote","投票解锁"),
-                new BotCommand("/ciduo","可自己查看雌堕记录"),
                 new BotCommand("/chinese","中文语言包")
         );
     }

@@ -1,0 +1,81 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #F8E7F3; /* 背景颜色 */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    text-align: center;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff; /* 卡片背景 */
+}
+
+.title {
+    color: #FF6F61; /* 标题颜色 */
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.captcha-box {
+    font-size: 36px;
+    font-weight: bold;
+    color: #FF8C69; /* 验证码颜色 */
+    border: 2px dashed #FF6F61; /* 验证码框边框 */
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.generate-btn {
+    background-color: #FF6F61; /* 按钮颜色 */
+    color: #ffffff; /* 按钮文字颜色 */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+.generate-btn:hover {
+    background-color: #FF8C69; /* 悬停效果 */
+}
+/* 底部导航条 */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(to right, #ffdde1, #ee9ca7); /* 从浅粉到玫瑰粉的渐变 */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    height: 60px;
+}
+
+
+/* 导航项样式 */
+.nav-item {
+    text-align: center;
+    color: #333; /* 文字颜色 */
+    text-decoration: none; /* 去除下划线 */
+    font-size: 16px;
+}
+
+/* 导航图标 */
+.nav-item i {
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* 导航项悬停效果 */
+.nav-item:hover {
+    color: mediumpurple; /* 文字颜色变化 */
+}

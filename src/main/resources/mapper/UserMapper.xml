@@ -15,11 +15,12 @@
         <result column="clothes" property="clothes" jdbcType="VARCHAR"/>
         <result column="toys" property="toys" jdbcType="VARCHAR"/>
         <result column="betaid" property="betaId" jdbcType="VARCHAR"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         userid
-        , username, tgusername,flag,status,addtimenum,minustimenum,jointime,lasttime,xpinfo,clothes,toys,betaid
+        , username, tgusername,flag,status,addtimenum,minustimenum,jointime,lasttime,xpinfo,clothes,toys,betaid,code
     </sql>
 
 
@@ -97,5 +98,10 @@
         where userid = #{userId}
     </update>
 
+    <update id="updateUserCode" parameterType="com.jing.mapper.entity.User">
+        update t_user
+        set code =#{code}
+        where userid = #{userId}
+    </update>
 
 </mapper>
